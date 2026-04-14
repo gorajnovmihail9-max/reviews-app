@@ -48,7 +48,6 @@
 
         .back-btn { margin-right: 16px; display: flex; align-items: center; }
         .back-btn svg { width: 24px; height: 24px; fill: var(--tg-link-color); }
-        
         .chat-info { display: flex; flex-direction: column; flex: 1; }
         .chat-title { font-size: 17px; font-weight: 500; line-height: 22px; }
         .chat-subtitle { font-size: 13px; color: var(--tg-hint-color); line-height: 16px; }
@@ -62,21 +61,68 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
         }
 
-        .message {
+        .date-divider {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            position: sticky;
+            top: 10px;
+            z-index: 5;
+        }
+
+        .date-divider span {
+            background: rgba(0, 0, 0, 0.4);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+        }
+
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            max-width: 90%;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #fff;
+            flex-shrink: 0;
+            user-select: none;
+        }
+
+        .message-bubble {
             background: var(--msg-in-bg);
             border-radius: 12px 12px 12px 4px;
             padding: 8px 12px;
-            max-width: 85%;
-            align-self: flex-start;
             position: relative;
             box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            min-width: 120px;
         }
 
-        .msg-author { color: var(--tg-link-color); font-size: 14px; font-weight: 500; margin-bottom: 3px; cursor: pointer; }
+        .msg-author { color: var(--tg-link-color); font-size: 14px; font-weight: 500; margin-bottom: 4px; cursor: pointer; }
         .msg-text { font-size: 15px; line-height: 1.4; word-wrap: break-word; padding-bottom: 14px; }
+        
+        .msg-photo {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            display: block;
+        }
+
         .msg-time { position: absolute; bottom: 6px; right: 10px; font-size: 11px; color: var(--tg-hint-color); }
 
         /* Панель ввода */
@@ -90,56 +136,32 @@
             align-items: center;
             padding: 0 10px;
         }
-
-        .fake-input {
-            flex: 1;
-            height: 36px;
-            background: var(--input-field);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-            color: var(--tg-hint-color);
-            font-size: 15px;
-            user-select: none;
-        }
+        .fake-input { flex: 1; height: 36px; background: var(--input-field); border-radius: 18px; display: flex; align-items: center; padding: 0 16px; color: var(--tg-hint-color); font-size: 15px; user-select: none; }
 
         /* Уведомление */
-        .toast {
-            position: fixed;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%) scale(0.9);
-            background: rgba(30,30,30,0.95);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.2s ease;
-            z-index: 100;
-        }
+        .toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9); background: rgba(30,30,30,0.95); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 100; }
         .toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
 
-        /* --- Админ Панель --- */
-        .admin-panel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #111; z-index: 999;
-            padding: 20px; overflow-y: auto;
-        }
+        /* Админ Панель */
+        .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 999; padding: 20px; overflow-y: auto; }
         .admin-panel.active { display: block; }
         .admin-title { font-size: 20px; margin-bottom: 20px; color: #fff; }
         .admin-input { width: 100%; background: #222; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
-        textarea.admin-input { height: 100px; resize: none; }
+        textarea.admin-input { height: 80px; resize: none; }
+        .admin-file-label { display: block; background: #333; padding: 12px; text-align: center; border-radius: 8px; margin-bottom: 10px; color: #8774e1; font-weight: 600; }
         .admin-btn { background: #8774e1; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
         .admin-btn.danger { background: #e53935; }
         .admin-btn.secondary { background: #333; }
         .review-list-item { background: #222; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .del-btn { color: #e53935; font-weight: bold; padding: 5px; cursor: pointer; }
-        #json-output { width: 100%; height: 80px; background: #000; color: #0f0; padding: 10px; border: none; border-radius: 8px; font-family: monospace; font-size: 12px; margin-bottom: 20px; }
+        
+        /* Цвета аватарок */
+        .c1 { background: linear-gradient(135deg, #ff5e5e, #e93b3b); }
+        .c2 { background: linear-gradient(135deg, #ff9a40, #e77616); }
+        .c3 { background: linear-gradient(135deg, #a872ff, #8241ea); }
+        .c4 { background: linear-gradient(135deg, #4ed04a, #28aa24); }
+        .c5 { background: linear-gradient(135deg, #4fb3ff, #2591e8); }
+        .c6 { background: linear-gradient(135deg, #ff6bb5, #e03f92); }
     </style>
 </head>
 <body>
@@ -166,8 +188,16 @@
         <div class="admin-title">Управление отзывами</div>
         
         <input type="text" id="a-name" class="admin-input" placeholder="Имя пользователя (напр. Alex_99)">
-        <input type="text" id="a-time" class="admin-input" placeholder="Время (напр. 14:30)">
-        <textarea id="a-text" class="admin-input" placeholder="Текст отзыва..."></textarea>
+        <input type="date" id="a-date" class="admin-input">
+        <input type="time" id="a-time" class="admin-input">
+        
+        <label class="admin-file-label">
+            Прикрепить фото
+            <input type="file" id="a-photo" accept="image/*" style="display: none;">
+        </label>
+        <div id="photo-preview" style="font-size: 12px; color: #4ed04a; text-align: center; margin-bottom: 10px; display: none;">Фото загружено</div>
+
+        <textarea id="a-text" class="admin-input" placeholder="Текст отзыва (необязательно, если есть фото)"></textarea>
         
         <button class="admin-btn" onclick="addReview()">Добавить отзыв</button>
         
@@ -182,31 +212,72 @@
         tg.expand();
         tg.ready();
 
-        // Базовые отзывы (отображаются по умолчанию)
         let defaultReviews = [
-            { name: "Евгений", time: "10:15", text: "Абсолютно невероятный опыт. Система прочитала меня как открытую книгу." },
-            { name: "Maria V.", time: "11:42", text: "Сначала сомневалась, но паттерны описаны настолько точно, что стало даже жутко." },
-            { name: "Dmitry", time: "14:05", text: "Протоколы работают. Три дня тишины дали больше результатов, чем год терапии." }
+            { name: "Евгений", date: "2026-04-12", time: "10:15", text: "Абсолютно невероятный опыт.", photo: "" },
+            { name: "Maria V.", date: "2026-04-14", time: "11:42", text: "Сначала сомневалась, но паттерны описаны настолько точно, что стало даже жутко.", photo: "" }
         ];
 
-        // Загрузка отзывов (из памяти телефона, если они есть)
-        let reviews = JSON.parse(localStorage.getItem('saved_reviews')) || defaultReviews;
+        let reviews = JSON.parse(localStorage.getItem('tg_reviews_v2')) || defaultReviews;
+        let currentPhotoB64 = "";
+
+        // Месяцы для красивого отображения даты
+        const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+
+        function getInitials(name) {
+            let parts = name.trim().split(' ');
+            if(parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
+            return name.substring(0, 2).toUpperCase();
+        }
+
+        function getColorClass(name) {
+            // Создаем псевдослучайный, но постоянный цвет для одного имени
+            let sum = 0;
+            for(let i=0; i<name.length; i++) sum += name.charCodeAt(i);
+            return 'c' + ((sum % 6) + 1);
+        }
+
+        function formatDisplayDate(dateStr) {
+            let d = new Date(dateStr);
+            return `${d.getDate()} ${months[d.getMonth()]}`;
+        }
 
         function renderChat() {
             const chat = document.getElementById('chat');
             document.getElementById('sub-count').innerText = `${reviews.length} участников`;
             chat.innerHTML = '';
             
+            // Сортировка по дате и времени
+            reviews.sort((a, b) => {
+                let dateA = new Date(a.date + 'T' + a.time);
+                let dateB = new Date(b.date + 'T' + b.time);
+                return dateA - dateB;
+            });
+
+            let currentDate = '';
+
             reviews.forEach(r => {
+                // Добавление разделителя даты
+                if (r.date !== currentDate) {
+                    chat.innerHTML += `<div class="date-divider"><span>${formatDisplayDate(r.date)}</span></div>`;
+                    currentDate = r.date;
+                }
+
+                let photoHtml = r.photo ? `<img src="${r.photo}" class="msg-photo">` : '';
+                let textHtml = r.text ? `<div class="msg-text">${r.text}</div>` : '';
+
                 chat.innerHTML += `
-                    <div class="message">
-                        <div class="msg-author" onclick="showToast()">${r.name}</div>
-                        <div class="msg-text">${r.text}</div>
-                        <div class="msg-time">${r.time}</div>
+                    <div class="message-row">
+                        <div class="avatar ${getColorClass(r.name)}">${getInitials(r.name)}</div>
+                        <div class="message-bubble">
+                            <div class="msg-author" onclick="showToast()">${r.name}</div>
+                            ${photoHtml}
+                            ${textHtml}
+                            <div class="msg-time">${r.time}</div>
+                        </div>
                     </div>
                 `;
             });
-            chat.scrollTop = chat.scrollHeight; // Автоскролл вниз
+            setTimeout(() => chat.scrollTop = chat.scrollHeight, 100);
         }
 
         let toastTimer;
@@ -218,24 +289,54 @@
             toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        // --- ЛОГИКА АДМИНКИ ---
-        let clicks = 0;
-        let clickTimer;
-        document.getElementById('header-trigger').addEventListener('click', (e) => {
-            // Исключаем клик по кнопке "назад"
-            if(e.target.closest('.back-btn')) return;
+        // --- ЛОГИКА ФОТОГРАФИИ ---
+        document.getElementById('a-photo').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if(!file) return;
             
-            clicks++;
-            clearTimeout(clickTimer);
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    // Сжимаем фото, чтобы память браузера не переполнилась
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500;
+                    let scaleSize = MAX_WIDTH / img.width;
+                    if(scaleSize > 1) scaleSize = 1; // Не увеличиваем маленькие
+                    
+                    canvas.width = img.width * scaleSize;
+                    canvas.height = img.height * scaleSize;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // Конвертируем в Base64 текст
+                    currentPhotoB64 = canvas.toDataURL('image/jpeg', 0.6);
+                    document.getElementById('photo-preview').style.display = 'block';
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+
+        // --- ЛОГИКА АДМИНКИ ---
+        let clicks = 0; let clickTimer;
+        document.getElementById('header-trigger').addEventListener('click', (e) => {
+            if(e.target.closest('.back-btn')) return;
+            clicks++; clearTimeout(clickTimer);
             clickTimer = setTimeout(() => clicks = 0, 500);
             
             if(clicks === 5) {
                 if(prompt("Код доступа:") === "123") {
                     document.getElementById('admin').classList.add('active');
+                    
+                    // Ставим текущую дату и время по умолчанию
+                    let now = new Date();
+                    document.getElementById('a-date').value = now.toISOString().split('T')[0];
+                    document.getElementById('a-time').value = now.toTimeString().substring(0, 5);
+                    
                     renderAdminList();
-                } else {
-                    alert("Неверный код");
-                }
+                } else { alert("Неверный код"); }
                 clicks = 0;
             }
         });
@@ -244,9 +345,10 @@
             const list = document.getElementById('admin-list');
             list.innerHTML = '';
             reviews.forEach((r, idx) => {
+                let snippet = r.text ? r.text.substring(0, 20) : (r.photo ? "[Фотография]" : "");
                 list.innerHTML += `
                     <div class="review-list-item">
-                        <div><strong style="color:#8774e1">${r.name}</strong> (${r.time})<br><span style="font-size:12px; color:#aaa">${r.text.substring(0, 25)}...</span></div>
+                        <div><strong style="color:#8774e1">${r.name}</strong> (${formatDisplayDate(r.date)} ${r.time})<br><span style="font-size:12px; color:#aaa">${snippet}...</span></div>
                         <div class="del-btn" onclick="deleteReview(${idx})">X</div>
                     </div>
                 `;
@@ -255,17 +357,21 @@
 
         function addReview() {
             const name = document.getElementById('a-name').value;
+            const date = document.getElementById('a-date').value;
             const time = document.getElementById('a-time').value;
             const text = document.getElementById('a-text').value;
             
-            if(!name || !time || !text) return alert("Заполните все поля!");
+            if(!name || !date || !time) return alert("Заполните Имя, Дату и Время!");
+            if(!text && !currentPhotoB64) return alert("Добавьте текст или прикрепите фото!");
             
-            reviews.push({ name, time, text });
+            reviews.push({ name, date, time, text, photo: currentPhotoB64 });
             saveAndRender();
             
-            document.getElementById('a-name').value = '';
-            document.getElementById('a-time').value = '';
+            // Очистка
             document.getElementById('a-text').value = '';
+            document.getElementById('a-photo').value = '';
+            currentPhotoB64 = "";
+            document.getElementById('photo-preview').style.display = 'none';
         }
 
         function deleteReview(idx) {
@@ -276,16 +382,13 @@
         }
 
         function saveAndRender() {
-            localStorage.setItem('saved_reviews', JSON.stringify(reviews));
+            localStorage.setItem('tg_reviews_v2', JSON.stringify(reviews));
             renderAdminList();
             renderChat();
         }
 
-        function closeAdmin() {
-            document.getElementById('admin').classList.remove('active');
-        }
+        function closeAdmin() { document.getElementById('admin').classList.remove('active'); }
 
-        // Первичный рендер
         renderChat();
     </script>
 </body>
