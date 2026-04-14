@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Отзывы</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --tg-bg-color: #0f0f0f;
+            --tg-text-color: #ffffff;
+            --tg-hint-color: #aaaaaa;
+            --tg-link-color: #8774e1;
+            --msg-in-bg: #212121;
+            --header-bg: rgba(33, 33, 33, 0.85);
+            --input-bg: #181818;
+            --input-field: #2b2b2b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--tg-bg-color);
+            background-image: url('data:image/svg+xml;utf8,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 30 L60 0 L60 60 Z" fill="rgba(255,255,255,0.01)"/></svg>');
+            color: var(--tg-text-color);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Шапка чата */
+        .header {
+            height: 56px;
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+            border-bottom: 1px solid rgba(0,0,0,0.5);
+        }
+
+        .back-btn { margin-right: 16px; display: flex; align-items: center; }
+        .back-btn svg { width: 24px; height: 24px; fill: var(--tg-link-color); }
+        
+        .chat-info { display: flex; flex-direction: column; flex: 1; }
+        .chat-title { font-size: 17px; font-weight: 500; line-height: 22px; }
+        .chat-subtitle { font-size: 13px; color: var(--tg-hint-color); line-height: 16px; }
+
+        /* Область сообщений */
+        .chat-area {
+            flex: 1;
+            margin-top: 56px;
+            margin-bottom: 52px;
+            padding: 16px 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .message {
+            background: var(--msg-in-bg);
+            border-radius: 12px 12px 12px 4px;
+            padding: 8px 12px;
+            max-width: 85%;
+            align-self: flex-start;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .msg-author { color: var(--tg-link-color); font-size: 14px; font-weight: 500; margin-bottom: 3px; cursor: pointer; }
+        .msg-text { font-size: 15px; line-height: 1.4; word-wrap: break-word; padding-bottom: 14px; }
+        .msg-time { position: absolute; bottom: 6px; right: 10px; font-size: 11px; color: var(--tg-hint-color); }
+
+        /* Панель ввода */
+        .input-area {
+            height: 52px;
+            background: var(--input-bg);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+        }
+
+        .fake-input {
+            flex: 1;
+            height: 36px;
+            background: var(--input-field);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            color: var(--tg-hint-color);
+            font-size: 15px;
+            user-select: none;
+        }
+
+        /* Уведомление */
+        .toast {
+            position: fixed;
+            bottom: 70px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: rgba(30,30,30,0.95);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
+
+        /* --- Админ Панель --- */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #111; z-index: 999;
+            padding: 20px; overflow-y: auto;
+        }
+        .admin-panel.active { display: block; }
+        .admin-title { font-size: 20px; margin-bottom: 20px; color: #fff; }
+        .admin-input { width: 100%; background: #222; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
+        textarea.admin-input { height: 100px; resize: none; }
+        .admin-btn { background: #8774e1; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
+        .admin-btn.danger { background: #e53935; }
+        .admin-btn.secondary { background: #333; }
+        .review-list-item { background: #222; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .del-btn { color: #e53935; font-weight: bold; padding: 5px; cursor: pointer; }
+        #json-output { width: 100%; height: 80px; background: #000; color: #0f0; padding: 10px; border: none; border-radius: 8px; font-family: monospace; font-size: 12px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="header" id="header-trigger">
+        <div class="back-btn" onclick="tg.close()">
+            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        </div>
+        <div class="chat-info">
+            <div class="chat-title">Отзывы клиентов</div>
+            <div class="chat-subtitle" id="sub-count">загрузка...</div>
+        </div>
+    </div>
+
+    <div class="chat-area" id="chat"></div>
+
+    <div class="input-area">
+        <div class="fake-input">Писать могут только администраторы...</div>
+    </div>
+
+    <div class="toast" id="toast">Аккаунт скрыт пользователем</div>
+
+    <div class="admin-panel" id="admin">
+        <div class="admin-title">Управление отзывами</div>
+        
+        <input type="text" id="a-name" class="admin-input" placeholder="Имя пользователя (напр. Alex_99)">
+        <input type="text" id="a-time" class="admin-input" placeholder="Время (напр. 14:30)">
+        <textarea id="a-text" class="admin-input" placeholder="Текст отзыва..."></textarea>
+        
+        <button class="admin-btn" onclick="addReview()">Добавить отзыв</button>
+        
+        <div style="margin-top: 20px; color: #aaa; font-size: 12px; margin-bottom: 5px;">База данных:</div>
+        <div id="admin-list"></div>
+
+        <button class="admin-btn secondary" onclick="closeAdmin()">Вернуться в чат</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Базовые отзывы (отображаются по умолчанию)
+        let defaultReviews = [
+            { name: "Евгений", time: "10:15", text: "Абсолютно невероятный опыт. Система прочитала меня как открытую книгу." },
+            { name: "Maria V.", time: "11:42", text: "Сначала сомневалась, но паттерны описаны настолько точно, что стало даже жутко." },
+            { name: "Dmitry", time: "14:05", text: "Протоколы работают. Три дня тишины дали больше результатов, чем год терапии." }
+        ];
+
+        // Загрузка отзывов (из памяти телефона, если они есть)
+        let reviews = JSON.parse(localStorage.getItem('saved_reviews')) || defaultReviews;
+
+        function renderChat() {
+            const chat = document.getElementById('chat');
+            document.getElementById('sub-count').innerText = `${reviews.length} участников`;
+            chat.innerHTML = '';
+            
+            reviews.forEach(r => {
+                chat.innerHTML += `
+                    <div class="message">
+                        <div class="msg-author" onclick="showToast()">${r.name}</div>
+                        <div class="msg-text">${r.text}</div>
+                        <div class="msg-time">${r.time}</div>
+                    </div>
+                `;
+            });
+            chat.scrollTop = chat.scrollHeight; // Автоскролл вниз
+        }
+
+        let toastTimer;
+        function showToast() {
+            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        // --- ЛОГИКА АДМИНКИ ---
+        let clicks = 0;
+        let clickTimer;
+        document.getElementById('header-trigger').addEventListener('click', (e) => {
+            // Исключаем клик по кнопке "назад"
+            if(e.target.closest('.back-btn')) return;
+            
+            clicks++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => clicks = 0, 500);
+            
+            if(clicks === 5) {
+                if(prompt("Код доступа:") === "123") {
+                    document.getElementById('admin').classList.add('active');
+                    renderAdminList();
+                } else {
+                    alert("Неверный код");
+                }
+                clicks = 0;
+            }
+        });
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = '';
+            reviews.forEach((r, idx) => {
+                list.innerHTML += `
+                    <div class="review-list-item">
+                        <div><strong style="color:#8774e1">${r.name}</strong> (${r.time})<br><span style="font-size:12px; color:#aaa">${r.text.substring(0, 25)}...</span></div>
+                        <div class="del-btn" onclick="deleteReview(${idx})">X</div>
+                    </div>
+                `;
+            });
+        }
+
+        function addReview() {
+            const name = document.getElementById('a-name').value;
+            const time = document.getElementById('a-time').value;
+            const text = document.getElementById('a-text').value;
+            
+            if(!name || !time || !text) return alert("Заполните все поля!");
+            
+            reviews.push({ name, time, text });
+            saveAndRender();
+            
+            document.getElementById('a-name').value = '';
+            document.getElementById('a-time').value = '';
+            document.getElementById('a-text').value = '';
+        }
+
+        function deleteReview(idx) {
+            if(confirm("Удалить отзыв?")) {
+                reviews.splice(idx, 1);
+                saveAndRender();
+            }
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('saved_reviews', JSON.stringify(reviews));
+            renderAdminList();
+            renderChat();
+        }
+
+        function closeAdmin() {
+            document.getElementById('admin').classList.remove('active');
+        }
+
+        // Первичный рендер
+        renderChat();
+    </script>
+</body>
+</html>
