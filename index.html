@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EROS</title>
     <style>
-        /* Оригинальные шрифты Telegram */
         body { 
             background: #0e1621; 
             color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding: 0; 
             -webkit-font-smoothing: antialiased;
         }
         
-        /* Центрированная шапка */
+        /* Шапка по центру */
         .header { 
             background: #17212b; 
             padding: 8px 0; 
@@ -27,28 +26,26 @@
             top: 0; 
             z-index: 10; 
             border-bottom: 1px solid #242f3d; 
-            height: 44px; /* Стандартная высота тулбара */
+            height: 46px;
         }
         
         .header h1 { 
             margin: 0; 
             font-size: 17px; 
             font-weight: 600; 
-            line-height: 20px;
         }
         
         .header p { 
             margin: 0; 
             font-size: 13px; 
             color: #7f91a4; 
-            line-height: 16px;
         }
         
         .chat { 
             padding: 10px; 
             display: flex; 
             flex-direction: column; 
-            gap: 8px; 
+            gap: 6px; 
         }
 
         .date-separator { 
@@ -59,57 +56,57 @@
         .date-separator span { 
             background: rgba(24, 37, 51, 0.7); 
             color: #fff; 
-            padding: 2px 10px; 
+            padding: 2px 12px; 
             border-radius: 12px; 
             font-size: 13px; 
             font-weight: 500;
         }
 
-        /* Контейнер сообщения с аватаром */
+        /* Сообщение с аватаром */
         .message-row {
             display: flex;
-            align-items: flex-end; /* Аватар прижат к низу сообщения */
+            align-items: flex-end;
             gap: 8px;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        /* Круглый аватар */
         .user-avatar {
-            width: 35px;
-            height: 35px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: #fff;
             flex-shrink: 0;
             text-transform: uppercase;
         }
 
-        /* Пузырь сообщения */
         .message-bubble { 
             background: #182533; 
-            padding: 6px 10px 22px 10px; /* Большой отступ снизу под время */
+            padding: 6px 10px 20px 10px; 
             border-radius: 12px 12px 12px 4px; 
-            max-width: 75%; 
+            max-width: 78%; 
             position: relative; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         
+        /* Имя пользователя — только цвет текста, без рамок */
         .msg-name { 
             font-size: 14px; 
             font-weight: 600; 
             margin-bottom: 2px;
             display: block;
+            background: none !important; /* Убираем любые фоны */
+            padding: 0 !important;       /* Убираем внутренние отступы */
+            border: none !important;      /* Убираем рамки */
         }
         
         .msg-text { 
             font-size: 15px; 
             line-height: 1.4; 
             color: #fff; 
-            word-wrap: break-word;
         }
         
         .msg-time { 
@@ -120,14 +117,14 @@
             color: #6b7d90; 
         }
 
-        /* Цвета аватарок как в ТГ */
-        .color-0 { background: #ee675c; } /* Red */
-        .color-1 { background: #4ec034; } /* Green */
-        .color-2 { background: #f09a37; } /* Orange */
-        .color-3 { background: #50a2e3; } /* Blue */
-        .color-4 { background: #a695e7; } /* Purple */
-        .color-5 { background: #ef799e; } /* Pink */
-        .color-6 { background: #4cc6ac; } /* Cyan */
+        /* Цвета для имен и аватарок */
+        .text-0, .bg-0 { color: #ee675c; } .bg-0 { background: #ee675c; color: #fff; }
+        .text-1, .bg-1 { color: #4ec034; } .bg-1 { background: #4ec034; color: #fff; }
+        .text-2, .bg-2 { color: #f09a37; } .bg-2 { background: #f09a37; color: #fff; }
+        .text-3, .bg-3 { color: #50a2e3; } .bg-3 { background: #50a2e3; color: #fff; }
+        .text-4, .bg-4 { color: #a695e7; } .bg-4 { background: #a695e7; color: #fff; }
+        .text-5, .bg-5 { color: #ef799e; } .bg-5 { background: #ef799e; color: #fff; }
+        .text-6, .bg-6 { color: #4cc6ac; } .bg-6 { background: #4cc6ac; color: #fff; }
     </style>
 </head>
 <body>
@@ -153,101 +150,4 @@
             { name: "alex_nyc", text: "$200. Take it or leave it." },
             { name: "simon_s", text: "damn you are stunning... would $300 get me some exclusive content?" },
             { name: "GamerGuy01", text: "$100 sent. check ur cashapp!" },
-            { name: "kev_4x4", text: "I need some new wallpaper lol. $200?" },
-            { name: "ryan_h", text: "can u do customs? I have $300 ready for the right pics." },
-            { name: "Dan_M", text: "$400 if you can verify right now." },
-            { name: "steve_b90", text: "Just saw ur new post 🔥 $100 for the uncensored ones?" },
-            { name: "aaron_smith", text: "I’ll pay $200 for a weekend package. u interested?" },
-            { name: "Paul_W", text: "$500 straight up. No games. DM me ur link." },
-            { name: "nick_j", text: "hey baby, $100 for a quick pic?" },
-            { name: "brad_p", text: "I've got $300 burning a hole in my pocket. Show me what you got." },
-            { name: "ethan_hunt", text: "$200 is my limit, hope that's enough for the premium stuff." },
-            { name: "zack_m", text: "$100. Crypto or Cashapp, u choose." },
-            { name: "Tony_M", text: "I only deal in high quality. $400 for your best set." },
-            { name: "lucas_90", text: "$100 for a taste? If I like it, I'll send more." },
-            { name: "mark_d", text: "Just DM'd u. $200 ready to go." },
-            { name: "eric_c", text: "$300!!! PLS SEND" },
-            { name: "ian_w", text: "I'm a serious buyer. $500 for full lifetime access." },
-            { name: "greg_h", text: "$100 for some gym selfies? 🥵" },
-            { name: "matt_m", text: "$200 if you write my name on you." },
-            { name: "tyler_d", text: "I don't trust these links. I'll send $300 directly to u." },
-            { name: "justin_b", text: "$100 for feet pics? Don't judge me lol." },
-            { name: "brian_o", text: "$400. Let's make this happen." },
-            { name: "adam_s", text: "$200 sent to ur tip jar. Please check inbox." },
-            { name: "colin_f", text: "I'll do $100, but I need proof of life first." },
-            { name: "derek_h", text: "$300 for a 1 on 1?" },
-            { name: "evan_r", text: "$500. Just tell me where to send it in USDT." },
-            { name: "frank_c", text: "$200 for a quick tease?" },
-            { name: "george_c", text: "I'm good for $100. Check ur messages." },
-            { name: "harry_p", text: "$300. Please respond, I've been waiting all day." },
-            { name: "isaac_n", text: "$200. Is that enough for the VIP tier?" },
-            { name: "jacob_b", text: "$400 for the whole archive. Deal?" },
-            { name: "kyle_b", text: "$100. I'm a loyal customer, hook me up." },
-            { name: "liam_n", text: "I have a very specific set of requests... $300." },
-            { name: "mason_m", text: "$500 for the ultimate experience pics." },
-            { name: "noah_a", text: "$200 for a quick snap?" },
-            { name: "oliver_t", text: "Please, I'll pay $100." },
-            { name: "peter_p", text: "$300 for the good stuff?" },
-            { name: "quinn_m", text: "$400 is my final offer." },
-            { name: "robert_d", text: "I have $500 for u." },
-            { name: "sam_s", text: "$200. Let's do this." }
-        ];
-
-        // Функция получения цвета на основе имени (чтобы у одного юзера всегда был один цвет)
-        function getColorClass(name) {
-            let hash = 0;
-            for (let i = 0; i < name.length; i++) {
-                hash = name.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            return 'color-' + (Math.abs(hash) % 7);
-        }
-
-        // Функция получения имени автора (имя или первая буква)
-        function getInitials(name) {
-            return name.charAt(0).toUpperCase();
-        }
-
-        const chatContainer = document.getElementById('chat-container');
-        let commentIndex = 0;
-
-        for (let day = 1; day <= 15; day++) {
-            const dateDiv = document.createElement('div');
-            dateDiv.className = 'date-separator';
-            dateDiv.innerHTML = `<span>April ${day}</span>`;
-            chatContainer.appendChild(dateDiv);
-
-            let commentsToday = (day % 3 === 0) ? 4 : 3; 
-            let currentHour = Math.floor(Math.random() * 8) + 8;
-            let currentMinute = Math.floor(Math.random() * 60);
-
-            for (let i = 0; i < commentsToday; i++) {
-                if (commentIndex >= comments.length) break;
-                const comment = comments[commentIndex];
-                const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
-                
-                const colorClass = getColorClass(comment.name);
-                const initial = getInitials(comment.name);
-
-                const rowDiv = document.createElement('div');
-                rowDiv.className = 'message-row';
-                rowDiv.innerHTML = `
-                    <div class="user-avatar ${colorClass}">${initial}</div>
-                    <div class="message-bubble">
-                        <span class="msg-name ${colorClass.replace('bg', 'text')}">${comment.name}</span>
-                        <div class="msg-text">${comment.text}</div>
-                        <div class="msg-time">${timeString}</div>
-                    </div>
-                `;
-                chatContainer.appendChild(rowDiv);
-
-                currentMinute += Math.floor(Math.random() * 45) + 5;
-                if (currentMinute >= 60) {
-                    currentHour += 1;
-                    currentMinute -= 60;
-                }
-                commentIndex++;
-            }
-        }
-    </script>
-</body>
-</html>
+            { name: "kev_4x4", text: "I need some new wallpaper
