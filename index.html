@@ -150,4 +150,95 @@
             { name: "alex_nyc", text: "$200. Take it or leave it." },
             { name: "simon_s", text: "damn you are stunning... would $300 get me some exclusive content?" },
             { name: "GamerGuy01", text: "$100 sent. check ur cashapp!" },
-            { name: "kev_4x4", text: "I need some new wallpaper
+            { name: "kev_4x4", text: "I need some new wallpaper lol. $200?" },
+            { name: "ryan_h", text: "can u do customs? I have $300 ready for the right pics." },
+            { name: "Dan_M", text: "$400 if you can verify right now." },
+            { name: "steve_b90", text: "Just saw ur new post 🔥 $100 for the uncensored ones?" },
+            { name: "aaron_smith", text: "I’ll pay $200 for a weekend package. u interested?" },
+            { name: "Paul_W", text: "$500 straight up. No games. DM me ur link." },
+            { name: "nick_j", text: "hey baby, $100 for a quick pic?" },
+            { name: "brad_p", text: "I've got $300 burning a hole in my pocket. Show me what you got." },
+            { name: "ethan_hunt", text: "$200 is my limit, hope that's enough for the premium stuff." },
+            { name: "zack_m", text: "$100. Crypto or Cashapp, u choose." },
+            { name: "Tony_M", text: "I only deal in high quality. $400 for your best set." },
+            { name: "lucas_90", text: "$100 for a taste? If I like it, I'll send more." },
+            { name: "mark_d", text: "Just DM'd u. $200 ready to go." },
+            { name: "eric_c", text: "$300!!! PLS SEND" },
+            { name: "ian_w", text: "I'm a serious buyer. $500 for full lifetime access." },
+            { name: "greg_h", text: "$100 for some gym selfies? 🥵" },
+            { name: "matt_m", text: "$200 if you write my name on you." },
+            { name: "tyler_d", text: "I don't trust these links. I'll send $300 directly to u." },
+            { name: "justin_b", text: "$100 for feet pics? Don't judge me lol." },
+            { name: "brian_o", text: "$400. Let's make this happen." },
+            { name: "adam_s", text: "$200 sent to ur tip jar. Please check inbox." },
+            { name: "colin_f", text: "I'll do $100, but I need proof of life first." },
+            { name: "derek_h", text: "$300 for a 1 on 1?" },
+            { name: "evan_r", text: "$500. Just tell me where to send it in USDT." },
+            { name: "frank_c", text: "$200 for a quick tease?" },
+            { name: "george_c", text: "I'm good for $100. Check ur messages." },
+            { name: "harry_p", text: "$300. Please respond, I've been waiting all day." },
+            { name: "isaac_n", text: "$200. Is that enough for the VIP tier?" },
+            { name: "jacob_b", text: "$400 for the whole archive. Deal?" },
+            { name: "kyle_b", text: "$100. I'm a loyal customer, hook me up." },
+            { name: "liam_n", text: "I have a very specific set of requests... $300." },
+            { name: "mason_m", text: "$500 for the ultimate experience pics." },
+            { name: "noah_a", text: "$200 for a quick snap?" },
+            { name: "oliver_t", text: "Please, I'll pay $100." },
+            { name: "peter_p", text: "$300 for the good stuff?" },
+            { name: "quinn_m", text: "$400 is my final offer." },
+            { name: "robert_d", text: "I have $500 for u." },
+            { name: "sam_s", text: "$200. Let's do this." }
+        ];
+
+        function getColorIndex(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return Math.abs(hash) % 7;
+        }
+
+        const chatContainer = document.getElementById('chat-container');
+        let commentIndex = 0;
+
+        for (let day = 1; day <= 15; day++) {
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'date-separator';
+            dateDiv.innerHTML = `<span>April ${day}</span>`;
+            chatContainer.appendChild(dateDiv);
+
+            let commentsToday = (day % 3 === 0) ? 4 : 3; 
+            let currentHour = Math.floor(Math.random() * 8) + 8;
+            let currentMinute = Math.floor(Math.random() * 60);
+
+            for (let i = 0; i < commentsToday; i++) {
+                if (commentIndex >= comments.length) break;
+                const comment = comments[commentIndex];
+                const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+                
+                const cIdx = getColorIndex(comment.name);
+                const initial = comment.name.charAt(0).toUpperCase();
+
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'message-row';
+                rowDiv.innerHTML = `
+                    <div class="user-avatar bg-${cIdx}">${initial}</div>
+                    <div class="message-bubble">
+                        <span class="msg-name text-${cIdx}">${comment.name}</span>
+                        <div class="msg-text">${comment.text}</div>
+                        <div class="msg-time">${timeString}</div>
+                    </div>
+                `;
+                chatContainer.appendChild(rowDiv);
+
+                currentMinute += Math.floor(Math.random() * 45) + 5;
+                if (currentMinute >= 60) {
+                    currentHour += 1;
+                    currentMinute -= 60;
+                }
+                commentIndex++;
+            }
+        }
+    </script>
+</body>
+</html>
