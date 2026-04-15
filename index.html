@@ -1,395 +1,216 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Отзывы</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>EROS</title>
     <style>
-        :root {
-            --tg-bg-color: #0f0f0f;
-            --tg-text-color: #ffffff;
-            --tg-hint-color: #aaaaaa;
-            --tg-link-color: #8774e1;
-            --msg-in-bg: #212121;
-            --header-bg: rgba(33, 33, 33, 0.85);
-            --input-bg: #181818;
-            --input-field: #2b2b2b;
+        /* Базовые стили под темную тему Telegram */
+        body { 
+            background: #0e1621; 
+            color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            background-color: var(--tg-bg-color);
-            background-image: url('data:image/svg+xml;utf8,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><path d="M30 30 L60 0 L60 60 Z" fill="rgba(255,255,255,0.01)"/></svg>');
-            color: var(--tg-text-color);
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+        
+        /* Шапка */
+        .header { 
+            background: #17212b; 
+            padding: 10px 15px; 
+            display: flex; 
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            border-bottom: 1px solid #242f3d; 
         }
-
-        /* Шапка чата */
-        .header {
-            height: 56px;
-            background: var(--header-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        
+        /* Аватарка группы */
+        .avatar { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #1e3c72, #2a5298); 
+            margin-right: 15px; 
             display: flex;
             align-items: center;
-            padding: 0 16px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10;
-            border-bottom: 1px solid rgba(0,0,0,0.5);
-        }
-
-        .back-btn { margin-right: 16px; display: flex; align-items: center; }
-        .back-btn svg { width: 24px; height: 24px; fill: var(--tg-link-color); }
-        .chat-info { display: flex; flex-direction: column; flex: 1; }
-        .chat-title { font-size: 17px; font-weight: 500; line-height: 22px; }
-        .chat-subtitle { font-size: 13px; color: var(--tg-hint-color); line-height: 16px; }
-
-        /* Область сообщений */
-        .chat-area {
-            flex: 1;
-            margin-top: 56px;
-            margin-bottom: 52px;
-            padding: 16px 12px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .date-divider {
-            display: flex;
             justify-content: center;
-            margin: 10px 0;
-            position: sticky;
-            top: 10px;
-            z-index: 5;
+            font-weight: bold;
+            font-size: 16px;
+            color: white;
         }
-
-        .date-divider span {
-            background: rgba(0, 0, 0, 0.4);
-            color: rgba(255, 255, 255, 0.8);
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 13px;
+        
+        /* Текст в шапке */
+        .info h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0.5px; }
+        .info p { margin: 0; font-size: 13px; color: #7f91a4; }
+        
+        /* Область чата */
+        .chat { 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+            padding-bottom: 30px; 
+        }
+        
+        /* Разделитель дат */
+        .date-separator { text-align: center; margin: 10px 0; }
+        .date-separator span { 
+            background: #182533; 
+            color: #7f91a4; 
+            padding: 4px 12px; 
+            border-radius: 12px; 
+            font-size: 12px; 
             font-weight: 500;
-            backdrop-filter: blur(5px);
         }
-
-        .message-row {
-            display: flex;
-            align-items: flex-end;
-            gap: 8px;
-            max-width: 90%;
-        }
-
-        .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: #fff;
-            flex-shrink: 0;
-            user-select: none;
-        }
-
-        .message-bubble {
-            background: var(--msg-in-bg);
-            border-radius: 12px 12px 12px 4px;
-            padding: 8px 12px;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            min-width: 120px;
-        }
-
-        .msg-author { color: var(--tg-link-color); font-size: 14px; font-weight: 500; margin-bottom: 4px; cursor: pointer; }
-        .msg-text { font-size: 15px; line-height: 1.4; word-wrap: break-word; padding-bottom: 14px; }
         
-        .msg-photo {
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 6px;
-            display: block;
+        /* Пузырь сообщения */
+        .message { 
+            background: #182533; 
+            padding: 8px 12px; 
+            border-radius: 12px; 
+            border-bottom-left-radius: 4px; 
+            max-width: 85%; 
+            align-self: flex-start; 
+            position: relative; 
         }
-
-        .msg-time { position: absolute; bottom: 6px; right: 10px; font-size: 11px; color: var(--tg-hint-color); }
-
-        /* Панель ввода */
-        .input-area {
-            height: 52px;
-            background: var(--input-bg);
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            padding: 0 10px;
-        }
-        .fake-input { flex: 1; height: 36px; background: var(--input-field); border-radius: 18px; display: flex; align-items: center; padding: 0 16px; color: var(--tg-hint-color); font-size: 15px; user-select: none; }
-
-        /* Уведомление */
-        .toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) scale(0.9); background: rgba(30,30,30,0.95); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 100; }
-        .toast.show { opacity: 1; transform: translateX(-50%) scale(1); }
-
-        /* Админ Панель */
-        .admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 999; padding: 20px; overflow-y: auto; }
-        .admin-panel.active { display: block; }
-        .admin-title { font-size: 20px; margin-bottom: 20px; color: #fff; }
-        .admin-input { width: 100%; background: #222; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
-        textarea.admin-input { height: 80px; resize: none; }
-        .admin-file-label { display: block; background: #333; padding: 12px; text-align: center; border-radius: 8px; margin-bottom: 10px; color: #8774e1; font-weight: 600; }
-        .admin-btn { background: #8774e1; color: #fff; border: none; padding: 14px; border-radius: 8px; font-size: 16px; width: 100%; font-weight: 600; margin-bottom: 10px; cursor: pointer; }
-        .admin-btn.danger { background: #e53935; }
-        .admin-btn.secondary { background: #333; }
-        .review-list-item { background: #222; padding: 10px; border-radius: 6px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .del-btn { color: #e53935; font-weight: bold; padding: 5px; cursor: pointer; }
         
-        /* Цвета аватарок */
-        .c1 { background: linear-gradient(135deg, #ff5e5e, #e93b3b); }
-        .c2 { background: linear-gradient(135deg, #ff9a40, #e77616); }
-        .c3 { background: linear-gradient(135deg, #a872ff, #8241ea); }
-        .c4 { background: linear-gradient(135deg, #4ed04a, #28aa24); }
-        .c5 { background: linear-gradient(135deg, #4fb3ff, #2591e8); }
-        .c6 { background: linear-gradient(135deg, #ff6bb5, #e03f92); }
+        /* Имя пользователя */
+        .msg-name { color: #64b5f6; font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+        
+        /* Текст комментария */
+        .msg-text { 
+            font-size: 15px; 
+            line-height: 1.4; 
+            color: #e1e8e8; 
+            margin-bottom: 12px; /* Место под время */
+            padding-right: 35px; /* Чтобы текст не налезал на время */
+        }
+        
+        /* Время сообщения */
+        .msg-time { 
+            position: absolute; 
+            bottom: 6px; 
+            right: 10px; 
+            font-size: 11px; 
+            color: #6b7d90; 
+        }
     </style>
 </head>
 <body>
 
-    <div class="header" id="header-trigger">
-        <div class="back-btn" onclick="tg.close()">
-            <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        </div>
-        <div class="chat-info">
-            <div class="chat-title">Отзывы клиентов</div>
-            <div class="chat-subtitle" id="sub-count">загрузка...</div>
+    <div class="header">
+        <div class="avatar">E</div>
+        <div class="info">
+            <h1>EROS</h1>
+            <p>1.5k members</p>
         </div>
     </div>
 
-    <div class="chat-area" id="chat"></div>
-
-    <div class="input-area">
-        <div class="fake-input">Писать могут только администраторы...</div>
-    </div>
-
-    <div class="toast" id="toast">Аккаунт скрыт пользователем</div>
-
-    <div class="admin-panel" id="admin">
-        <div class="admin-title">Управление отзывами</div>
-        
-        <input type="text" id="a-name" class="admin-input" placeholder="Имя пользователя (напр. Alex_99)">
-        <input type="date" id="a-date" class="admin-input">
-        <input type="time" id="a-time" class="admin-input">
-        
-        <label class="admin-file-label">
-            Прикрепить фото
-            <input type="file" id="a-photo" accept="image/*" style="display: none;">
-        </label>
-        <div id="photo-preview" style="font-size: 12px; color: #4ed04a; text-align: center; margin-bottom: 10px; display: none;">Фото загружено</div>
-
-        <textarea id="a-text" class="admin-input" placeholder="Текст отзыва (необязательно, если есть фото)"></textarea>
-        
-        <button class="admin-btn" onclick="addReview()">Добавить отзыв</button>
-        
-        <div style="margin-top: 20px; color: #aaa; font-size: 12px; margin-bottom: 5px;">База данных:</div>
-        <div id="admin-list"></div>
-
-        <button class="admin-btn secondary" onclick="closeAdmin()">Вернуться в чат</button>
-    </div>
+    <div class="chat" id="chat-container"></div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-
-        let defaultReviews = [
-            { name: "Евгений", date: "2026-04-12", time: "10:15", text: "Абсолютно невероятный опыт.", photo: "" },
-            { name: "Maria V.", date: "2026-04-14", time: "11:42", text: "Сначала сомневалась, но паттерны описаны настолько точно, что стало даже жутко.", photo: "" }
+        // Массив всех 50 комментариев
+        const comments = [
+            { name: "jason_m99", text: "I’ll drop $200 rn if u can send a custom set. DM me." },
+            { name: "CryptoDave", text: "Hey gorgeous, got $500 waiting in my wallet. Let's talk biz." },
+            { name: "T_Bone88", text: "$100 for 5 pics? let me know if that works 4 u" },
+            { name: "xAlpha_male", text: "Broke boys in the chat lol. I can do $300 today. Check ur requests." },
+            { name: "marcus.lee", text: "pls answer my dm, I have $200 ready to send via paypal" },
+            { name: "Wolf_of_WallSt", text: "How much for a private folder? I can go up to $400." },
+            { name: "tommy_g", text: "$100 just to see your face, let alone the rest 😍" },
+            { name: "chris_the_man", text: "If you're real, I'll send $300 right now. Too many fakes here." },
+            { name: "BigRich1980", text: "I'm feeling generous tonight. $500 for a VIP session." },
+            { name: "alex_nyc", text: "$200. Take it or leave it." },
+            { name: "simon_s", text: "damn you are stunning... would $300 get me some exclusive content?" },
+            { name: "GamerGuy01", text: "$100 sent. check ur cashapp!" },
+            { name: "kev_4x4", text: "I need some new wallpaper lol. $200?" },
+            { name: "ryan_h", text: "can u do customs? I have $300 ready for the right pics." },
+            { name: "Dan_M", text: "$400 if you can verify right now." },
+            { name: "steve_b90", text: "Just saw ur new post 🔥 $100 for the uncensored ones?" },
+            { name: "aaron_smith", text: "I’ll pay $200 for a weekend package. u interested?" },
+            { name: "Paul_W", text: "$500 straight up. No games. DM me ur link." },
+            { name: "nick_j", text: "hey baby, $100 for a quick pic?" },
+            { name: "brad_p", text: "I've got $300 burning a hole in my pocket. Show me what you got." },
+            { name: "ethan_hunt", text: "$200 is my limit, hope that's enough for the premium stuff." },
+            { name: "zack_m", text: "$100. Crypto or Cashapp, u choose." },
+            { name: "Tony_M", text: "I only deal in high quality. $400 for your best set." },
+            { name: "lucas_90", text: "$100 for a taste? If I like it, I'll send more." },
+            { name: "mark_d", text: "Just DM'd u. $200 ready to go." },
+            { name: "eric_c", text: "$300!!! PLS SEND" },
+            { name: "ian_w", text: "I'm a serious buyer. $500 for full lifetime access." },
+            { name: "greg_h", text: "$100 for some gym selfies? 🥵" },
+            { name: "matt_m", text: "$200 if you write my name on you." },
+            { name: "tyler_d", text: "I don't trust these links. I'll send $300 directly to u." },
+            { name: "justin_b", text: "$100 for feet pics? Don't judge me lol." },
+            { name: "brian_o", text: "$400. Let's make this happen." },
+            { name: "adam_s", text: "$200 sent to ur tip jar. Please check inbox." },
+            { name: "colin_f", text: "I'll do $100, but I need proof of life first." },
+            { name: "derek_h", text: "$300 for a 1 on 1?" },
+            { name: "evan_r", text: "$500. Just tell me where to send it in USDT." },
+            { name: "frank_c", text: "$200 for a quick tease?" },
+            { name: "george_c", text: "I'm good for $100. Check ur messages." },
+            { name: "harry_p", text: "$300. Please respond, I've been waiting all day." },
+            { name: "isaac_n", text: "$200. Is that enough for the VIP tier?" },
+            { name: "jacob_b", text: "$400 for the whole archive. Deal?" },
+            { name: "kyle_b", text: "$100. I'm a loyal customer, hook me up." },
+            { name: "liam_n", text: "I have a very specific set of requests... $300." },
+            { name: "mason_m", text: "$500 for the ultimate experience pics." },
+            { name: "noah_a", text: "$200 for a quick snap?" },
+            { name: "oliver_t", text: "Please, I'll pay $100." },
+            { name: "peter_p", text: "$300 for the good stuff?" },
+            { name: "quinn_m", text: "$400 is my final offer." },
+            { name: "robert_d", text: "I have $500 for u." },
+            { name: "sam_s", text: "$200. Let's do this." }
         ];
 
-        let reviews = JSON.parse(localStorage.getItem('tg_reviews_v2')) || defaultReviews;
-        let currentPhotoB64 = "";
+        const chatContainer = document.getElementById('chat-container');
+        let commentIndex = 0;
 
-        // Месяцы для красивого отображения даты
-        const months = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
+        // Генерация дней с 1 по 15 апреля
+        for (let day = 1; day <= 15; day++) {
+            // Добавляем плашку с датой
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'date-separator';
+            dateDiv.innerHTML = `<span>April ${day}</span>`;
+            chatContainer.appendChild(dateDiv);
 
-        function getInitials(name) {
-            let parts = name.trim().split(' ');
-            if(parts.length > 1) return (parts[0][0] + parts[1][0]).toUpperCase();
-            return name.substring(0, 2).toUpperCase();
-        }
+            // Рандомно 3 или 4 комментария в день, чтобы уложить 50 штук в 15 дней
+            let commentsToday = (day % 3 === 0) ? 4 : 3; 
 
-        function getColorClass(name) {
-            // Создаем псевдослучайный, но постоянный цвет для одного имени
-            let sum = 0;
-            for(let i=0; i<name.length; i++) sum += name.charCodeAt(i);
-            return 'c' + ((sum % 6) + 1);
-        }
+            // Переменная для времени, чтобы оно шло по нарастающей в течение дня
+            let currentHour = Math.floor(Math.random() * 8) + 8; // Старт между 8:00 и 15:00
+            let currentMinute = Math.floor(Math.random() * 60);
 
-        function formatDisplayDate(dateStr) {
-            let d = new Date(dateStr);
-            return `${d.getDate()} ${months[d.getMonth()]}`;
-        }
+            for (let i = 0; i < commentsToday; i++) {
+                if (commentIndex >= comments.length) break;
 
-        function renderChat() {
-            const chat = document.getElementById('chat');
-            document.getElementById('sub-count').innerText = `${reviews.length} участников`;
-            chat.innerHTML = '';
-            
-            // Сортировка по дате и времени
-            reviews.sort((a, b) => {
-                let dateA = new Date(a.date + 'T' + a.time);
-                let dateB = new Date(b.date + 'T' + b.time);
-                return dateA - dateB;
-            });
+                const comment = comments[commentIndex];
+                
+                // Форматируем время (например 09:05)
+                const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
 
-            let currentDate = '';
-
-            reviews.forEach(r => {
-                // Добавление разделителя даты
-                if (r.date !== currentDate) {
-                    chat.innerHTML += `<div class="date-divider"><span>${formatDisplayDate(r.date)}</span></div>`;
-                    currentDate = r.date;
-                }
-
-                let photoHtml = r.photo ? `<img src="${r.photo}" class="msg-photo">` : '';
-                let textHtml = r.text ? `<div class="msg-text">${r.text}</div>` : '';
-
-                chat.innerHTML += `
-                    <div class="message-row">
-                        <div class="avatar ${getColorClass(r.name)}">${getInitials(r.name)}</div>
-                        <div class="message-bubble">
-                            <div class="msg-author" onclick="showToast()">${r.name}</div>
-                            ${photoHtml}
-                            ${textHtml}
-                            <div class="msg-time">${r.time}</div>
-                        </div>
-                    </div>
+                // Создаем сообщение
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'message';
+                msgDiv.innerHTML = `
+                    <div class="msg-name">${comment.name}</div>
+                    <div class="msg-text">${comment.text}</div>
+                    <div class="msg-time">${timeString}</div>
                 `;
-            });
-            setTimeout(() => chat.scrollTop = chat.scrollHeight, 100);
-        }
+                chatContainer.appendChild(msgDiv);
 
-        let toastTimer;
-        function showToast() {
-            if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-            const t = document.getElementById('toast');
-            t.classList.add('show');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
-        }
-
-        // --- ЛОГИКА ФОТОГРАФИИ ---
-        document.getElementById('a-photo').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    // Сжимаем фото, чтобы память браузера не переполнилась
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500;
-                    let scaleSize = MAX_WIDTH / img.width;
-                    if(scaleSize > 1) scaleSize = 1; // Не увеличиваем маленькие
-                    
-                    canvas.width = img.width * scaleSize;
-                    canvas.height = img.height * scaleSize;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // Конвертируем в Base64 текст
-                    currentPhotoB64 = canvas.toDataURL('image/jpeg', 0.6);
-                    document.getElementById('photo-preview').style.display = 'block';
+                // Увеличиваем время для следующего сообщения в этот же день
+                currentMinute += Math.floor(Math.random() * 45) + 5;
+                if (currentMinute >= 60) {
+                    currentHour += 1;
+                    currentMinute -= 60;
                 }
-                img.src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-        });
-
-        // --- ЛОГИКА АДМИНКИ ---
-        let clicks = 0; let clickTimer;
-        document.getElementById('header-trigger').addEventListener('click', (e) => {
-            if(e.target.closest('.back-btn')) return;
-            clicks++; clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => clicks = 0, 500);
-            
-            if(clicks === 5) {
-                if(prompt("Код доступа:") === "123") {
-                    document.getElementById('admin').classList.add('active');
-                    
-                    // Ставим текущую дату и время по умолчанию
-                    let now = new Date();
-                    document.getElementById('a-date').value = now.toISOString().split('T')[0];
-                    document.getElementById('a-time').value = now.toTimeString().substring(0, 5);
-                    
-                    renderAdminList();
-                } else { alert("Неверный код"); }
-                clicks = 0;
-            }
-        });
-
-        function renderAdminList() {
-            const list = document.getElementById('admin-list');
-            list.innerHTML = '';
-            reviews.forEach((r, idx) => {
-                let snippet = r.text ? r.text.substring(0, 20) : (r.photo ? "[Фотография]" : "");
-                list.innerHTML += `
-                    <div class="review-list-item">
-                        <div><strong style="color:#8774e1">${r.name}</strong> (${formatDisplayDate(r.date)} ${r.time})<br><span style="font-size:12px; color:#aaa">${snippet}...</span></div>
-                        <div class="del-btn" onclick="deleteReview(${idx})">X</div>
-                    </div>
-                `;
-            });
-        }
-
-        function addReview() {
-            const name = document.getElementById('a-name').value;
-            const date = document.getElementById('a-date').value;
-            const time = document.getElementById('a-time').value;
-            const text = document.getElementById('a-text').value;
-            
-            if(!name || !date || !time) return alert("Заполните Имя, Дату и Время!");
-            if(!text && !currentPhotoB64) return alert("Добавьте текст или прикрепите фото!");
-            
-            reviews.push({ name, date, time, text, photo: currentPhotoB64 });
-            saveAndRender();
-            
-            // Очистка
-            document.getElementById('a-text').value = '';
-            document.getElementById('a-photo').value = '';
-            currentPhotoB64 = "";
-            document.getElementById('photo-preview').style.display = 'none';
-        }
-
-        function deleteReview(idx) {
-            if(confirm("Удалить отзыв?")) {
-                reviews.splice(idx, 1);
-                saveAndRender();
+                
+                commentIndex++;
             }
         }
-
-        function saveAndRender() {
-            localStorage.setItem('tg_reviews_v2', JSON.stringify(reviews));
-            renderAdminList();
-            renderChat();
-        }
-
-        function closeAdmin() { document.getElementById('admin').classList.remove('active'); }
-
-        renderChat();
     </script>
 </body>
 </html>
